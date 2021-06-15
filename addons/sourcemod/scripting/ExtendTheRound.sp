@@ -42,6 +42,7 @@ char g_sPrefix[64];
 
 // ArrayLists
 ArrayList g_hIntervals;
+ArrayList g_hIntervalsTime;
 
 // Handles 
 Handle g_hTimer;
@@ -53,6 +54,7 @@ ConVar gc_iLowerBoundPlayers;
 ConVar gc_flAdditionalTime;
 ConVar gc_bCountDeadPlayers;
 ConVar gc_iStartTimerInterval;
+ConVar gc_sIntervalAdditionalTime;
 ConVar gc_iTimerRepeat;
 ConVar gc_sInterval;
 ConVar gc_sPrefix;
@@ -67,6 +69,7 @@ float g_flSecondsCounter;
 // Integers
 int g_iPreviousNumberOfPlayers;
 int g_iPreviousInterval;
+int g_iPreviousTimeInterval;
 int g_iSaveSeconds;
 int g_iTimerCounter;
 
@@ -119,6 +122,7 @@ public void OnPluginStart()
     gc_flAdditionalTime = AutoExecConfig_CreateConVar("sm_er_additional_time", "1", "Дополнительное время, которое будет добавляться к основному за каждого игрока (если переменная не равно нулю \"sm_er_lower_bound\", то эти игроки не будут учтены) (указывать в минутах)", 0, true, 0.0, false);
     gc_bCountDeadPlayers = AutoExecConfig_CreateConVar("sm_er_count_dead_players", "0", "Учитывать мертвых игроков, как игроков за которых стоит манипулировать длительностью раунда? (0 - нет, 1 - да)", 0, true, 0.0, true, 1.0);
     gc_sInterval = AutoExecConfig_CreateConVar("sm_er_interval", "5, 10, 15, 20, 25, 30", "Промежутки, числа в них - это количество игроков, при которых нужно увеличивать длительность раунда (то есть в отличие от \"sm_er_lower_bound\", данная переменная будет увеличивать длительность раунда при достижение определенного числа игроков на соотвествующее время)", 0, false);
+    gc_sIntervalAdditionalTime = AutoExecConfig_CreateConVar("sm_er_interval_additional_time", "1, 2, 3, 4, 5, 6", "Время, которое стоит добавлять к основному времени в определенных интервалах (ВНИМАНИЕ! Количество чисел должно быть равно числу интервалов в \"sm_er_interval\") (данная переменная работает, только при условие, что \"sm_er_additional_time\" = 0) (указывать в минутах)", 0, false);
     gc_sAdminCommands = AutoExecConfig_CreateConVar("sm_er_admin_command", "er, extend", "Название команды, которая вызывает специальное меню (указывать в строку, разделяя каждую команду через запятую без использования приставки sm_)", 0, false);
     gc_sAdminFlags = AutoExecConfig_CreateConVar("sm_er_admin_flags", "z", "Флаги доступа к специальному меню от плагина (указывать в строку, без пробелом и прочих знаков)", 0, false);
 
@@ -192,6 +196,28 @@ public void OnConfigsExecuted()
 
         g_hIntervals.Sort(Sort_Ascending, Sort_Integer);
     }
+
+    // Init Intervals Time
+    if(gc_flAdditionalTime.FloatValue == 0.0)
+    {
+        g_hIntervalsTime = new ArrayList();
+        char sInterval[128];
+        char buffers[64][8];
+
+        GetConVarString(gc_sIntervalAdditionalTime, sInterval, sizeof(sInterval));
+
+        ExplodeString(sInterval, ",", buffers, 64, 8);
+        
+        for(int i = 0; i < 64; ++i)
+        {
+            TrimString(buffers[i]);
+
+            if(strlen(buffers[i]) != 0)
+            {
+                g_hIntervalsTime.Push(StringToInt(buffers[i]));
+            }
+        }
+    }
 }
 
 public void OnPluginEnd()
@@ -228,8 +254,15 @@ void Event_RoundStart(Event event, const char[] name, bool dontBroadcast)
     }
     else 
     {
-        CheckAdditionalTimeInterval();
-        g_hTimer = CreateTimer(gc_iStartTimerInterval.FloatValue / gc_iTimerRepeat.FloatValue, Timer_CheckAdditionalTimeInterval, 0, TIMER_REPEAT);
+        if(g_hIntervals.Length != 0)
+        {
+            CheckAdditionalTimeInterval();
+            g_hTimer = CreateTimer(gc_iStartTimerInterval.FloatValue / gc_iTimerRepeat.FloatValue, Timer_CheckAdditionalTimeInterval, 0, TIMER_REPEAT);
+        }
+        else 
+        {
+            LogError("Обе переменные \"sm_er_interval\" и \"sm_er_lower_bound\" равны нулю! Одна из данных переменных обязательно должны иметь значение!");
+        }
     }
 }
 
@@ -260,13 +293,65 @@ void ChangeRoundTime(int delta, bool flag)
     if(flag)
     {
         g_iSaveSeconds = RoundToNearest(delta * gc_flAdditionalTime.FloatValue * 60);
-        GameRules_SetProp("m_iRoundTime", GameRules_GetProp("m_iRoundTime", 4, 0) + RoundToNearest(delta * gc_flAdditionalTime.FloatValue * 60), 4, 0, true);
+
+        if(gc_flAdditionalTime.FloatValue != 0.0)
+        {
+            GameRules_SetProp("m_iRoundTime", GameRules_GetProp("m_iRoundTime", 4, 0) + RoundToNearest(delta * gc_flAdditionalTime.FloatValue * 60), 4, 0, true);
+        }
+        else 
+        {
+            if(g_hIntervalsTime.Length != 0)
+            {
+                if(delta >= g_hIntervalsTime.Length)
+                {
+                    delta = g_hIntervalsTime.Length - 1;
+                }
+
+                g_iPreviousTimeInterval = delta;
+
+                for(int i = 0; i < delta; ++i)
+                {
+                    GameRules_SetProp("m_iRoundTime", GameRules_GetProp("m_iRoundTime", 4, 0) + g_hIntervalsTime.Get(i) * 60, 4, 0, true);
+                }
+            }
+            else 
+            {
+                LogError("Обе переменные \"sm_er_interval_additional_time\" и \"sm_er_additional_time\" равны нулю! Одна из данных переменных обязательно должны иметь значение!");
+            }
+        }
     }
     else 
     {
-        if(GameRules_GetProp("m_iRoundTime", 4, 0) - RoundToNearest(delta * gc_flAdditionalTime.FloatValue * 60) >= 3)
+        if(gc_flAdditionalTime.FloatValue != 0.0)
         {
-            GameRules_SetProp("m_iRoundTime", GameRules_GetProp("m_iRoundTime", 4, 0) - RoundToNearest(delta * gc_flAdditionalTime.FloatValue * 60), 4, 0, true);
+            if(GameRules_GetProp("m_iRoundTime", 4, 0) - RoundToNearest(delta * gc_flAdditionalTime.FloatValue * 60) >= 3)
+            {
+                GameRules_SetProp("m_iRoundTime", GameRules_GetProp("m_iRoundTime", 4, 0) - RoundToNearest(delta * gc_flAdditionalTime.FloatValue * 60), 4, 0, true);
+            }
+        }
+        else 
+        {
+            if(g_hIntervalsTime.Length != 0)
+            {
+                if(delta >= g_hIntervalsTime.Length)
+                {
+                    delta = g_hIntervalsTime.Length - 1;
+                }
+
+                while(g_iPreviousTimeInterval - delta > 0)
+                {
+                    if(GameRules_GetProp("m_iRoundTime", 4, 0) - g_hIntervalsTime.Get(g_iPreviousTimeInterval) * 60 >= 3)
+                    {
+                        CPrintToChatAll("%i - time minus", g_hIntervalsTime.Get(g_iPreviousTimeInterval) * 60);
+                        GameRules_SetProp("m_iRoundTime", GameRules_GetProp("m_iRoundTime", 4, 0) - g_hIntervalsTime.Get(g_iPreviousTimeInterval) * 60, 4, 0, true);
+                    }
+                    --g_iPreviousTimeInterval;
+                }
+            }
+            else 
+            {
+                LogError("Обе переменные \"sm_er_interval_additional_time\" и \"sm_er_additional_time\" равны нулю! Одна из данных переменных обязательно должны иметь значение!");
+            }
         }
     }
 }
@@ -588,9 +673,16 @@ Action Timer_CheckAdditionalTimeInterval(Handle timer)
 
             if(GetInterval(iPlayers) < g_iPreviousInterval)
             {
-                if(GameRules_GetProp("m_iRoundTime", 4, 0) - (g_iSaveSeconds + RoundToNearest(g_flSecondsCounter)) >= 3)
+                if(gc_flAdditionalTime.FloatValue != 0.0)
                 {
-                    GameRules_SetProp("m_iRoundTime", GameRules_GetProp("m_iRoundTime", 4, 0) - (g_iSaveSeconds + RoundToNearest(g_flSecondsCounter)), 4, 0, true);
+                    if(GameRules_GetProp("m_iRoundTime", 4, 0) - (g_iSaveSeconds + RoundToNearest(g_flSecondsCounter)) >= 3)
+                    {
+                        GameRules_SetProp("m_iRoundTime", GameRules_GetProp("m_iRoundTime", 4, 0) - (g_iSaveSeconds + RoundToNearest(g_flSecondsCounter)), 4, 0, true);
+                    }
+                }
+                else 
+                {
+                    ChangeRoundTime(GetInterval(iPlayers), false);
                 }
             }
         }
@@ -610,12 +702,19 @@ Action Timer_CheckAdditionalTimeInterval(Handle timer)
             if(iPlayers < g_iPreviousInterval)
             {
                 if(GetInterval(iPlayers) < g_iPreviousInterval)
-            {
-                if(GameRules_GetProp("m_iRoundTime", 4, 0) - (g_iSaveSeconds + RoundToNearest(g_flSecondsCounter)) >= 3)
                 {
-                    GameRules_SetProp("m_iRoundTime", GameRules_GetProp("m_iRoundTime", 4, 0) - (g_iSaveSeconds + RoundToNearest(g_flSecondsCounter)), 4, 0, true);
+                    if(gc_flAdditionalTime.FloatValue != 0.0)
+                    {
+                        if(GameRules_GetProp("m_iRoundTime", 4, 0) - (g_iSaveSeconds + RoundToNearest(g_flSecondsCounter)) >= 3)
+                        {
+                            GameRules_SetProp("m_iRoundTime", GameRules_GetProp("m_iRoundTime", 4, 0) - (g_iSaveSeconds + RoundToNearest(g_flSecondsCounter)), 4, 0, true);
+                        }
+                    }
+                    else 
+                    {
+                        ChangeRoundTime(GetInterval(iPlayers), false);
+                    }
                 }
-            }
             }
         }
     }
