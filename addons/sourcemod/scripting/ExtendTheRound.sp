@@ -2,8 +2,8 @@
 * Extend The Round
 * by: DENFER © 2021
 *
-* https://github.com/KWDENFER/ExtendTheRound
-* https://vk.com/denferez
+* https://github.com/fdrinv/ExtendTheRound
+* https://vk.com/fedorinovea
 * https://steamcommunity.com/id/denferez
 *
 * This program is free software; you can redistribute it and/or modify it under
@@ -26,10 +26,10 @@
 
 // Custom includes 
 #include <autoexecconfig>
-#include <colorvariables>
+#include <colors>
 
 // Defines
-#define EXTENDTHEROUND_VERSION    "1.0"     
+#define EXTENDTHEROUND_VERSION    "1.2"     
 #define AUTHOR 	                  "DENFER"
 
 // Pragma 
@@ -80,7 +80,7 @@ bool g_bBoostTimer;
 // Informations
 public Plugin myinfo = {
 	name = "ExtendTheRound",
-	author = "DENFER (for all questions - https://vk.com/denferez)",
+	author = "DENFER (for all questions - https://vk.com/fedorinovea)",
 	description = "A plugin that extends the round time depending on the number of players on the server",
 	version = EXTENDTHEROUND_VERSION,
 };
@@ -342,7 +342,6 @@ void ChangeRoundTime(int delta, bool flag)
                 {
                     if(GameRules_GetProp("m_iRoundTime", 4, 0) - g_hIntervalsTime.Get(g_iPreviousTimeInterval) * 60 >= 3)
                     {
-                        CPrintToChatAll("%i - time minus", g_hIntervalsTime.Get(g_iPreviousTimeInterval) * 60);
                         GameRules_SetProp("m_iRoundTime", GameRules_GetProp("m_iRoundTime", 4, 0) - g_hIntervalsTime.Get(g_iPreviousTimeInterval) * 60, 4, 0, true);
                     }
                     --g_iPreviousTimeInterval;
@@ -478,7 +477,7 @@ void AdditionTime(int time)
         {
             if(IsClientInGame(i))
             {
-                time < 60 ? CPrintToChat(i, "%s %T", g_sPrefix, "All_Chat_Time_Increased_Sec", LANG_SERVER, time) : CPrintToChat(i, "%s %T", g_sPrefix, "All_Chat_Time_Increased_Min", LANG_SERVER, time / 60);
+                time < 60 ? CPrint(i, "All_Chat_Time_Increased_Sec", "%s %T", g_sPrefix, "All_Chat_Time_Increased_Sec", LANG_SERVER, time) : CPrint(i, "All_Chat_Time_Increased_Min", "%s %T", g_sPrefix, "All_Chat_Time_Increased_Min", LANG_SERVER, time / 60);
             }
         }
     }
@@ -490,7 +489,7 @@ void DecreaseTime(int client, int time)
     {
         if(gc_bMessages.BoolValue)
         {
-            CPrintToChat(client, "%s %T", "Chat_Time_Cant_Be_Reduced", g_sPrefix, LANG_SERVER);
+            CPrint(client, "Chat_Time_Cant_Be_Reduced", "%s %T", g_sPrefix, "Chat_Time_Cant_Be_Reduced", LANG_SERVER);
         }
 
         return;
@@ -504,7 +503,7 @@ void DecreaseTime(int client, int time)
         {
             if(IsClientInGame(i))
             {
-                time < 60 ? CPrintToChat(i, "%s %T", g_sPrefix, "All_Chat_Time_Reduced_Sec", LANG_SERVER, time) : CPrintToChat(i, "%s %T", g_sPrefix, "All_Chat_Time_Reduced_Min", LANG_SERVER, time / 60);
+                time < 60 ? CPrint(i, "All_Chat_Time_Reduced_Sec", "%s %T", g_sPrefix, "All_Chat_Time_Reduced_Sec", LANG_SERVER, time) : CPrint(i, "All_Chat_Time_Reduced_Min", "%s %T", g_sPrefix, "All_Chat_Time_Reduced_Min", LANG_SERVER, time / 60);
             }
         }
     }
@@ -527,7 +526,7 @@ void BoostTime(int x)
         {
             if(IsClientInGame(i))
             {
-                CPrintToChat(i, "%s %T", g_sPrefix, "All_Chat_Speed_Up_Time", LANG_SERVER, x * 100);
+                CPrint(i, "All_Chat_Speed_Up_Time", "%s %T", g_sPrefix, "All_Chat_Speed_Up_Time", LANG_SERVER, x * 100);
             }
         }
     }
@@ -768,7 +767,7 @@ Action Menu_ExtendTheRound(int client, int argc)
     return Plugin_Handled;
 }
 
-public int HandlerMenu_ExtendTheRound(Menu menu, MenuAction action, int param1, int param2)
+int HandlerMenu_ExtendTheRound(Menu menu, MenuAction action, int param1, int param2)
 {
     switch(action)
 	{
@@ -836,7 +835,7 @@ void Menu_Increase(int client)
     menu.Display(client, MENU_TIME_FOREVER);
 }
 
-public int HandlerMenu_Increase(Menu menu, MenuAction action, int param1, int param2)
+int HandlerMenu_Increase(Menu menu, MenuAction action, int param1, int param2)
 {
     switch(action)
 	{
@@ -937,7 +936,7 @@ void Menu_Reduce(int client)
     menu.Display(client, MENU_TIME_FOREVER);
 }
 
-public int HandlerMenu_Reduce(Menu menu, MenuAction action, int param1, int param2)
+int HandlerMenu_Reduce(Menu menu, MenuAction action, int param1, int param2)
 {
     switch(action)
 	{
@@ -1029,7 +1028,7 @@ Action Menu_SpeedUp(int client)
     menu.Display(client, MENU_TIME_FOREVER);
 }
 
-public int HandlerMenu_SpeedUp(Menu menu, MenuAction action, int param1, int param2)
+int HandlerMenu_SpeedUp(Menu menu, MenuAction action, int param1, int param2)
 {
     switch(action)
 	{
@@ -1068,7 +1067,7 @@ public int HandlerMenu_SpeedUp(Menu menu, MenuAction action, int param1, int par
                     {
                         if(IsClientInGame(i))
                         {
-                            CPrintToChat(i, "%s %T", g_sPrefix, "All_Chat_Speed_Up_Time_Cancel", LANG_SERVER);
+                            CPrint(i, "All_Chat_Speed_Up_Time_Cancel", "%s %T", g_sPrefix, "All_Chat_Speed_Up_Time_Cancel", LANG_SERVER);
                         }
                     }
                 }

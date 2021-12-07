@@ -92,35 +92,35 @@
 	"All_Chat_Time_Increased_Sec"
 	{
 		"#format"	"{1:i}"
-		"ru"		"{green}Продолжительность раунда была увеличина на {gold}{1} {blue}секунд{default}"
+		"ru"		"{default}Продолжительность раунда была увеличина на {team}{1} {green}секунд{default}"
 	}
 	"All_Chat_Time_Increased_Min"
 	{
 		"#format"	"{1:i}"
-		"ru"		"{green}Продолжительность раунда была увеличина на {gold}{1} {purple}минут{default}"
+		"ru"		"{default}Продолжительность раунда была увеличина на {team}{1} {green}минут{default}"
 	}
 	"All_Chat_Time_Reduced_Sec"
 	{
 		"#format"	"{1:i}"
-		"ru"		"{red}Продолжительность раунда была сокращена на {gold}{1} {blue}секунд{default}"
+		"ru"		"{default}Продолжительность раунда была сокращена на {team}{1} {green}секунд{default}"
 	}
 	"All_Chat_Time_Reduced_Min"
 	{
 		"#format"	"{1:i}"
-		"ru"		"{red}Продолжительность раунда была сокращена на {gold}{1} {purple}минут{default}"
+		"ru"		"{default}Продолжительность раунда была сокращена на {team}{1} {green}минут{default}"
 	}
 	"All_Chat_Speed_Up_Time"
 	{
 		"#format"	"{1:i}"
-		"ru"		"{green}Время раунда было ускорено на {gold}{1}%"
+		"ru"		"{default}Время раунда было ускорено на {team}{1}%"
 	}
 	"All_Chat_Speed_Up_Time_Cancel"
 	{
-		"ru"		"{red}Ускорение времени было отменено"
+		"ru"		"{default}Ускорение времени было отменено"
 	}
 	
 	"Chat_Time_Cant_Be_Reduced"
 	{
-		"ru"		"{darkred}Нельзя уменьшить продолжительность раунда, т.к. остаточное время должно оставаться больше {gold}3 {blue}секунд{default}"
+		"ru"		"{default}Нельзя уменьшить продолжительность раунда, т.к. остаточное время должно оставаться больше {team}3 {green}секунд{default}"
 	}
 }
