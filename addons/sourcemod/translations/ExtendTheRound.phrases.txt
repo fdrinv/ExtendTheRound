@@ -3,124 +3,152 @@
 	"Menu_Title_Extend"
 	{
 		"ru"		"Управление длительностью текущего раунда"
+		"en"		"Round duration menu"
 	}
 	"Menu_Increase"
 	{
 		"ru"		"Увеличить длительность раунда"
+		"en"		"Increase round duration"
 	}
 	"Menu_Reduce"
 	{
 		"ru"		"Уменьшить длительность раунда"
+		"en"		"Reduce round duration"
 	}
 	
 	"Menu_Title_Increase"
 	{
 		"ru"		"На сколько секунд/минут увеличить раунд?"
+		"en"		"How many seconds / minutes to increase the round?"
 	}
 	"Menu_Title_Reduce"
 	{
 		"ru"		"На сколько секунд/минут уменьшить раунд?"
+		"en"		"How many seconds / minutes to increase the round?"
 	}
 	
 	"Menu_Title_Speed_Up"
 	{
 		"ru"		"Ускорить время раунда"
+		"en"		"Speed ​​up round time"
 	}
 	"Cancel_Acceleration"
 	{
 		"ru"		"Отменить ускорение"
+		"en"		"Cancel time acceleration"
 	}
 	
 	"5s"
 	{
 		"ru"		"5 секунд"
+		"en"		"5 seconds"
 	}
 	"10s"
 	{
 		"ru"		"10 секунд"
+		"en"		"10 seconds"
 	}
 	"15s"
 	{
 		"ru"		"15 секунд"
+		"en"		"15 seconds"
 	}
 	"30s"
 	{
 		"ru"		"30 секунд"
+		"en"		"30 seconds"
 	}
 	"1m"
 	{
 		"ru"		"1 минуту"
+		"en"		"1 minutes"
 	}
 	"2m"
 	{
 		"ru"		"2 минуты"
+		"en"		"2 minutes"
 	}
 	"3m"
 	{
 		"ru"		"3 минуты"
+		"en"		"3 minutes"
 	}
 	"5m"
 	{
 		"ru"		"5 минут"
+		"en"		"5 minutes"
 	}
 	"10m"
 	{
 		"ru"		"10 минут"
+		"en"		"10 minutes"
 	}
 	
 	"1x"
 	{
 		"ru"		"100%"
+		"en"		"100%"
 	}
 	"2x"
 	{
 		"ru"		"200%"
+		"en"		"200%"
 	}
 	"3x"
 	{
 		"ru"		"300%"
+		"en"		"300%"
 	}
 	"4x"
 	{
 		"ru"		"400%"
+		"en"		"400%"
 	}
 	"5x"
 	{
 		"ru"		"500%"
+		"en"		"500%"
 	}
 	
 	"All_Chat_Time_Increased_Sec"
 	{
 		"#format"	"{1:i}"
 		"ru"		"{default}Продолжительность раунда была увеличина на {team}{1} {green}секунд{default}"
+		"en"		"{default}Round duration has been increased by {team}{1} {green}seconds{default}"
 	}
 	"All_Chat_Time_Increased_Min"
 	{
 		"#format"	"{1:i}"
 		"ru"		"{default}Продолжительность раунда была увеличина на {team}{1} {green}минут{default}"
+		"en"		"{default}Round duration has been increased by {team}{1} {green}minutes{default}"
 	}
 	"All_Chat_Time_Reduced_Sec"
 	{
 		"#format"	"{1:i}"
 		"ru"		"{default}Продолжительность раунда была сокращена на {team}{1} {green}секунд{default}"
+		"en"		"{default}Round duration has been reduce by {team}{1} {green}seconds{default}"
 	}
 	"All_Chat_Time_Reduced_Min"
 	{
 		"#format"	"{1:i}"
 		"ru"		"{default}Продолжительность раунда была сокращена на {team}{1} {green}минут{default}"
+		"en"		"{default}Round duration has been reduce by {team}{1} {green}minutes{default}"
 	}
 	"All_Chat_Speed_Up_Time"
 	{
 		"#format"	"{1:i}"
-		"ru"		"{default}Время раунда было ускорено на {team}{1}%"
+		"ru"		"{default}Время раунда было ускорено на {team}{1}{default}%"
+		"en"		"{default}Round time accelerated by {team}{1}{default}%"
 	}
 	"All_Chat_Speed_Up_Time_Cancel"
 	{
 		"ru"		"{default}Ускорение времени было отменено"
+		"en"		"{default}Time acceleration has been canceled"
 	}
 	
 	"Chat_Time_Cant_Be_Reduced"
 	{
 		"ru"		"{default}Нельзя уменьшить продолжительность раунда, т.к. остаточное время должно оставаться больше {team}3 {green}секунд{default}"
+		"en"		"{default}You can't reduce the duration of the round, because the remaining time must be longer than {team}3 {green}seconds{default}"
 	}
 }

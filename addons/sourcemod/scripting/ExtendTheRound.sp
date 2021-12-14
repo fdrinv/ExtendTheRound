@@ -29,7 +29,7 @@
 #include <colors>
 
 // Defines
-#define EXTENDTHEROUND_VERSION    "1.2"     
+#define EXTENDTHEROUND_VERSION    "1.3"     
 #define AUTHOR 	                  "DENFER"
 
 // Pragma 
@@ -132,8 +132,12 @@ public void OnPluginStart()
 
     // Hooks 
     HookConVarChange(FindConVar("mp_roundtime"), ConVarChange);
-    HookConVarChange(FindConVar("mp_roundtime_hostage"), ConVarChange);
-    HookConVarChange(FindConVar("mp_roundtime_defuse"), ConVarChange);
+
+    // Квары присуще только CSGO
+    if (GetEngineVersion() == Engine_CSGO) {
+        HookConVarChange(FindConVar("mp_roundtime_hostage"), ConVarChange);
+        HookConVarChange(FindConVar("mp_roundtime_defuse"), ConVarChange);
+    }
 
     HookEvent("round_start", Event_RoundStart);
     HookEvent("round_end", Event_RoundEnd);
@@ -194,7 +198,22 @@ public void OnConfigsExecuted()
             }
         }
 
+// Для SM выше 1.9        
+#if SOURCEMOD_V_MINOR > 9
         g_hIntervals.Sort(Sort_Ascending, Sort_Integer);
+#else 
+        int intervals[MaxClients] = new int[];
+
+        for (int i = 0; i < g_hIntervals.Length; ++i) {
+            intervals[i] = g_hIntervals(Get(i));
+        }
+
+        SortIntegers(intervals, MaxClients, Sort_Ascending);
+
+        for (int i = 0; i < g_hIntervals.Length; ++i) {
+            g_hIntervals.Set(i) = intervals[i];
+        }
+#endif
     }
 
     // Init Intervals Time
@@ -223,8 +242,10 @@ public void OnConfigsExecuted()
 public void OnPluginEnd()
 {
     UnhookConVarChange(FindConVar("mp_roundtime"), ConVarChange);
-    UnhookConVarChange(FindConVar("mp_roundtime_hostage"), ConVarChange); 
-    UnhookConVarChange(FindConVar("mp_roundtime_defuse"), ConVarChange); 
+    if (GetEngineVersion() == Engine_CSGO) {
+        UnhookConVarChange(FindConVar("mp_roundtime_hostage"), ConVarChange); 
+        UnhookConVarChange(FindConVar("mp_roundtime_defuse"), ConVarChange); 
+    }
 }
 
 // ***********************************************//

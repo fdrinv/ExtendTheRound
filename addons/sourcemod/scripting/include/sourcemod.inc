@@ -113,12 +113,6 @@ methodmap GameData < Handle
 	// @param name          Name of the property to find.
 	// @return              An address calculated on success, or 0 on failure.
 	public native Address GetAddress(const char[] name);
-
-	// Returns a function address calculated from a signature.
-	//
-	// @param name          Name of the property to find.
-	// @return              An address calculated on success, or 0 on failure.
-	public native Address GetMemSig(const char[] name);
 };
 
 /**
@@ -458,7 +452,7 @@ native void RegPluginLibrary(const char[] name);
  * Returns whether a library exists.  This function should be considered
  * expensive; it should only be called on plugin to determine availability
  * of resources.  Use OnLibraryAdded()/OnLibraryRemoved() to detect changes
- * in libraries.
+ * in optional resources.
  *
  * @param name          Library name of a plugin or extension.
  * @return              True if exists, false otherwise.
@@ -479,8 +473,8 @@ native bool LibraryExists(const char[] name);
 native int GetExtensionFileStatus(const char[] name, char[] error="", int maxlength=0);
 
 /**
- * Called after a library is added.
- * A library is either a plugin name or extension name, as
+ * Called after a library is added that the current plugin references
+ * optionally. A library is either a plugin name or extension name, as
  * exposed via its include file.
  *
  * @param name          Library name.
@@ -488,8 +482,8 @@ native int GetExtensionFileStatus(const char[] name, char[] error="", int maxlen
 forward void OnLibraryAdded(const char[] name);
 
 /**
- * Called right before a library is removed.
- * A library is either a plugin name or extension name, as
+ * Called right before a library is removed that the current plugin references
+ * optionally.  A library is either a plugin name or extension name, as
  * exposed via its include file.
  *
  * @param name          Library name.
@@ -682,10 +676,9 @@ enum Address
  *
  * @param addr          Address to a memory location.
  * @param size          How many bytes should be read.
- *                      If loading a floating-point value, use NumberType_Int32.
  * @return              The value that is stored at that address.
  */
-native any LoadFromAddress(Address addr, NumberType size);
+native int LoadFromAddress(Address addr, NumberType size);
 
 /**
  * Store up to 4 bytes to a memory address.
@@ -693,9 +686,8 @@ native any LoadFromAddress(Address addr, NumberType size);
  * @param addr          Address to a memory location.
  * @param data          Value to store at the address.
  * @param size          How many bytes should be written.
- *                      If storing a floating-point value, use NumberType_Int32.
  */
-native void StoreToAddress(Address addr, any data, NumberType size);
+native void StoreToAddress(Address addr, int data, NumberType size);
 
 methodmap FrameIterator < Handle {
 	// Creates a stack frame iterator to build your own stack traces.
